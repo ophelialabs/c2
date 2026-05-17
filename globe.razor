@@ -1,0 +1,278 @@
+@page "/Globe"
+
+<PageTitle>Step 1 - Simple Globe</PageTitle>
+
+<!-- Google Maps JS API Loader -->
+<script>
+    (g => {
+        var h, a, k, p = "The Google Maps JavaScript API", c = "google", l = "importLibrary", q = "__ib__", m = document, b = window;
+        b = b[c] || (b[c] = {});
+        var d = b.maps || (b.maps = {}), r = new Set, e = new URLSearchParams, u = () => h || (h = new Promise(async (f, n) => {
+            await (a = m.createElement("script"));
+            e.set("libraries", [...r] + "");
+            for (k in g) e.set(k.replace(/[A-Z]/g, t => "_" + t[0].toLowerCase()), g[k]);
+            e.set("callback", c + ".maps." + q);
+            a.src = `https://maps.${c}apis.com/maps/api/js?` + e;
+            d[q] = f;
+            a.onerror = () => h = n(Error(p + " could not load."));
+            a.nonce = m.querySelector("script[nonce]")?.nonce || "";
+            m.head.append(a)
+        }));
+        d[l] ? console.warn(p + " only loads once. Ignoring:", g) : d[l] = (f, ...n) => r.add(f) && u().then(() => d[l](f, ...n))
+    })({
+        key: "AIzaSyDK7BXtZz4ypjq0yr-7FrrAcl3oCoPpxK8",
+        v: "alpha"
+    });
+</script>
+<script>
+    let map3D = null;
+
+    async function init() {
+        const { Map3DElement, MapMode, Marker3DInteractiveElement } = await google.maps.importLibrary("maps3d");
+        const { PinElement } = await google.maps.importLibrary('marker');
+
+        map3D = new Map3DElement({
+            mode: MapMode.HYBRID,
+        });
+
+        map3D.addEventListener('gmp-click', (event) => {
+            console.log("camera: { center: { lat: " + map3D.center.lat + ", lng : " + map3D.center.lng + ", altitude: " + map3D.center.altitude + " }, range: " + map3D.range + ", tilt: " + map3D.tilt + " ,heading: " + map3D.heading + " }");
+            console.log("{ lat: " + event.position.lat + ", lng : " + event.position.lng + ", altitude: " + event.position.altitude + " }");
+            map3D.stopCameraAnimation();
+        });
+
+        const marker = new Marker3DInteractiveElement({
+            position: { lat: 51.5332, lng: -0.1260, altitude: 75 },
+            label: 'Google UK',
+            altitudeMode: 'ABSOLUTE',
+            extruded: true,
+        });
+
+        marker.addEventListener('gmp-click', (event) => {
+            map3D.flyCameraTo({
+                endCamera: {
+                    center: marker.position,
+                    tilt: 65,
+                    range: 500,
+                    heading: 0,
+                },
+                durationMillis: 12500,
+            });
+
+            map3D.addEventListener('gmp-animationend', () => {
+                map3D.flyCameraAround({
+                    camera: {
+                        center: marker.position,
+                        tilt: 65,
+                        range: 500,
+                        heading: 0,
+                    },
+                    durationMillis: 5000,
+                    rounds: 1
+                });
+            }, { once: true });
+
+            alert('You clicked on : ' + event.target.label);
+            event.stopPropagation();
+        });
+
+        // Create a custom pin
+        const base = document.location.href.substr(0, document.location.href.lastIndexOf("/"));
+        const markerPin = new PinElement({
+            "background": 'white',
+            "glyph": new URL(base + '/images/gb.svg'),
+            "scale": 1.0,
+        });
+        marker.append(markerPin);
+
+        map3D.append(marker);
+
+        // Add the globe to the container
+        document.getElementById('globe-container').append(map3D);
+    }
+
+    window.addEventListener('DOMContentLoaded', init);
+</script>
+
+<div id="globe-container" style="width:75vw; height:75vh;"></div>
+
+ <!-- Alerts Popup Section -->
+        <div style="
+            flex: 1;
+            position: relative;
+            width: 100%;
+        ">
+            <div style="
+                position: sticky;
+                top: 2rem;
+                z-index: 10;
+                background: rgba(30,41,59,0.98);
+                border-radius: 16px;
+                box-shadow: 0 8px 32px rgba(59,130,246,0.18);
+                border: 1px solid rgba(255,255,255,0.10);
+                padding: 1.5rem 1.2rem;
+                min-height: 120px;
+            ">
+                <h2 style="margin-top:0; margin-bottom:1rem;">Alerts & Notifications</h2>
+                @if (FleetAlerts.Any())
+                {
+                    <ul style="list-style:none; padding:0; margin:0;">
+                        @foreach (var alert in FleetAlerts.OrderByDescending(a => a.Timestamp))
+                        {
+                            <li style="margin-bottom:1.2rem;">
+                                <div style="
+                                    background: rgba(220,38,38,0.12);
+                                    border-left: 5px solid #ef4444;
+                                    border-radius: 12px;
+                                    padding: 1.2rem 1.2rem 1.2rem 1.5rem;
+                                    box-shadow: 0 2px 12px rgba(59,130,246,0.08);
+                                    display: flex;
+                                    align-items: flex-start;
+                                    gap: 1rem;">
+                                    <span style="font-size:1.5rem; color:#ef4444; margin-top:2px;">&#9888;</span>
+                                    <div>
+                                        <div style="font-weight:700; color:#f1f5f9; font-size:1.08rem;">
+                                            @alert.Title
+                                        </div>
+                                        <div style="color:#e0e7ef; margin:0.2rem 0 0.4rem 0;">
+                                            @alert.Message
+                                        </div>
+                                        <div style="font-size:0.93rem; color:#64748b;">
+                                            @alert.Timestamp.ToString("g")
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <div style="
+                        background: rgba(59,130,246,0.10);
+                        border-radius: 12px;
+                        padding: 1.2rem 1.2rem;
+                        color: #a5b4fc;
+                        text-align: center;">
+                        No alerts or notifications at this time.
+                    </div>
+                }
+            </div>
+        </div>
+
+        @code {
+    protected override async Task OnInitializedAsync()
+    {
+        await FetchRobotLocationsFromGoogleMapsAsync();
+    }
+
+    // Placeholder for Google Maps API call
+    private async Task FetchRobotLocationsFromGoogleMapsAsync()
+    {
+        await Task.Delay(500);
+        Console.WriteLine("Google Maps API call placeholder - insert live sensor/streaming logic here.");
+    }
+
+    public class Robot
+    {
+        public int Id { get; set; }
+        public string Model { get; set; }
+        public string Status { get; set; }
+        public DateTime LastMaintenanceDate { get; set; }
+        public int BatteryLevel { get; set; }
+        public string Location { get; set; }
+        public List<SensorInfo> Sensors { get; set; }
+    }
+
+    public class SensorInfo
+    {
+        public string Name { get; set; }
+        public string Value { get; set; }
+    }
+
+    private List<Robot> Robots = new()
+    {
+        new Robot
+        {
+            Id = 101,
+            Model = "Atlas",
+            Status = "Active",
+            LastMaintenanceDate = DateTime.Now.AddDays(-15),
+            BatteryLevel = 85,
+            Location = "Warehouse A",
+            Sensors = new List<SensorInfo>
+            {
+                new SensorInfo { Name = "Temperature", Value = "36°C" },
+                new SensorInfo { Name = "Proximity", Value = "Clear" }
+            }
+        },
+        new Robot
+        {
+            Id = 102,
+            Model = "Spot",
+            Status = "Maintenance",
+            LastMaintenanceDate = DateTime.Now.AddDays(-5),
+            BatteryLevel = 60,
+            Location = "Workshop",
+            Sensors = new List<SensorInfo>
+            {
+                new SensorInfo { Name = "Temperature", Value = "40°C" }
+            }
+        },
+        new Robot
+        {
+            Id = 103,
+            Model = "Pepper",
+            Status = "Active",
+            LastMaintenanceDate = DateTime.Now.AddDays(-20),
+            BatteryLevel = 90,
+            Location = "Lobby",
+            Sensors = new List<SensorInfo>
+            {
+                new SensorInfo { Name = "Humidity", Value = "45%" }
+            }
+        },
+        new Robot
+        {
+            Id = 104,
+            Model = "Nao",
+            Status = "Inactive",
+            LastMaintenanceDate = DateTime.Now.AddDays(-40),
+            BatteryLevel = 40,
+            Location = "Storage",
+            Sensors = null
+        }
+    };
+
+    private int TotalRobots => Robots.Count;
+    private int ActiveRobots => Robots.Count(r => r.Status == "Active");
+    private int RobotsInMaintenance => Robots.Count(r => r.Status == "Maintenance");
+    public class FleetAlert
+    {
+        public string Title { get; set; }
+        public string Message { get; set; }
+        public DateTime Timestamp { get; set; }
+    }
+
+    private List<FleetAlert> FleetAlerts = new()
+    {
+        new FleetAlert
+        {
+            Title = "Low Battery",
+            Message = "Robot Atlas battery below 20%.",
+            Timestamp = DateTime.Now.AddMinutes(-30)
+        },
+        new FleetAlert
+        {
+            Title = "Maintenance Required",
+            Message = "Robot Spot scheduled for maintenance.",
+            Timestamp = DateTime.Now.AddHours(-2)
+        },
+        new FleetAlert
+        {
+            Title = "Sensor Malfunction",
+            Message = "Robot Pepper sensor malfunction detected.",
+            Timestamp = DateTime.Now.AddMinutes(-10)
+        }
+    };
+}
