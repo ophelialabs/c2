@@ -1,0 +1,177 @@
+body {
+    background: #1e293b;
+    color: #f1f5f9;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.globeContainer {
+    width: 100%;
+    height: 75vh;
+    min-height: 500px;
+}
+
+.alertsSection {
+    flex: 1;
+    position: relative;
+    width: 100%;
+}
+
+.alertsPopup {
+    position: sticky;
+    top: 2rem;
+    background: rgba(30,41,59,0.98);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(59,130,246,0.18);
+    border: 1px solid rgba(255,255,255,0.10);
+    padding: 1.5rem 1.2rem;
+    height: 75vh;
+    min-height: 500px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.alertList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex: 1;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(96, 165, 250, 0.5) transparent;
+}
+
+.alertList::-webkit-scrollbar {
+    width: 6px;
+}
+
+.alertList::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.alertList::-webkit-scrollbar-thumb {
+    background-color: rgba(96, 165, 250, 0.5);
+    border-radius: 3px;
+}
+
+.alertItem {
+    margin-bottom: 1.2rem;
+}
+
+.alertContent {
+    background: rgba(220,38,38,0.12);
+    border-left: 5px solid #ef4444;
+    border-radius: 12px;
+    padding: 1.2rem 1.2rem 1.2rem 1.5rem;
+    box-shadow: 0 2px 12px rgba(59,130,246,0.08);
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.alertIcon {
+    font-size: 1.5rem;
+    color: #ef4444;
+    margin-top: 2px;
+}
+
+.alertTitle {
+    font-weight: 700;
+    color: #f1f5f9;
+    font-size: 1.08rem;
+}
+
+.alertMessage {
+    color: #e0e7ef;
+    margin: 0.2rem 0 0.4rem 0;
+}
+
+.alertTimestamp {
+    font-size: 0.93rem;
+    color: #64748b;
+}
+
+.noAlerts {
+    background: rgba(59,130,246,0.10);
+    border-radius: 12px;
+    padding: 1.2rem 1.2rem;
+    color: #a5b4fc;
+    text-align: center;
+}
+
+.alertCategory {
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin: 1.2rem 0 0.5rem 0;
+    color: #fbbf24;
+}
+
+.alertCategory.critical {
+    color: #ef4444;
+}
+
+.alertCategory.high {
+    color: #f59e42;
+}
+
+.alertCategory.medium {
+    color: #38bdf8;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 2rem;
+    background: #1e293b;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.table th,
+.table td {
+    padding: 0.9rem 1rem;
+    border-bottom: 1px solid #334155;
+}
+
+.table th {
+    background: #334155;
+    color: #a5b4fc;
+}
+
+.table tr:last-child td {
+    border-bottom: none;
+}
+
+.statsCards {
+    margin-bottom: 2rem;
+}
+
+.card {
+    margin-bottom: 1.5rem;
+}
+
+.mapContainer {
+    flex: 2;
+}
+
+.flexContainer {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
+    margin-bottom: 2.5rem;
+}
+
+.statsContainer {
+    background: rgba(59,130,246,0.12);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 12px rgba(59,130,246,0.10);
+}
+
+.statsList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}

@@ -1,0 +1,72 @@
+# gRPC Services
+
+This directory contains gRPC service implementations.
+
+## Contents
+
+### Services
+- `gRPCservice1/` - First gRPC service implementation
+  - ASP.NET solution and implementation files
+- `gRPCservice2/` - Second gRPC service implementation
+  - ASP.NET solution and implementation files
+
+## Purpose
+
+The gRPC directory contains ASP.NET-based gRPC service implementations that provide high-performance, scalable API endpoints for the system. These services handle various aspects of communication between system components using the Protocol Buffer definitions from the Proto directory.
+
+# Create a gRPC service
+
+https://learn.microsoft.com/en-us/aspnet/core/tutorials/grpc/grpc-start?view=aspnetcore-9.0&tabs=visual-studio-code
+
+change to dir that contains the project
+
+dotnet new grpc -o GrpcGreeter # creates a new gRPC service in the GrpcGreeter folder
+code -r GrpcGreeter # opens the GrpcGreeter project folder in the current instance of Visual Studio Code
+dotnet dev-certs https --trust
+
+https://learn.microsoft.com/en-us/aspnet/core/security/enforcing-ssl?view=aspnetcore-9.0&tabs=visual-studio%2Clinux-sles#trust-ff # trusting the Firefox browser
+
+Ctrl-F5 to run without the debugger
+
+# Create gRPC client in a .NET console app
+change directories to a folder for the project
+
+dotnet new console -o GrpcGreeterClient
+code -r GrpcGreeterClient 
+
+# Add required NuGet packages
+dotnet add GrpcGreeterClient.csproj package Grpc.Net.Client # contains the .NET Core client
+dotnet add GrpcGreeterClient.csproj package Google.Protobuf # protobuf message APIs for C#
+dotnet add GrpcGreeterClient.csproj package Grpc.Tools # tooling support for protobuf files
+
+# Add greet.proto
+- create a Protos folder in gRPC client project
+- copy Protos\greet.proto from gRPC Greeter service to Protos folder in gRPC client project
+- update namespace inside greet.proto to projects namespace
+```bash
+option csharp_namespace = "GrpcGreeterClient";
+```
+* edit the GrpcGreeterClient.csproj file
+* add an item group with <Protobuf> element that refers to the greet.proto file
+```bash
+<ItemGroup>
+  <Protobuf Include="Protos\greet.proto" GrpcServices="Client" />
+</ItemGroup>
+```
+
+# Create the Greeter client
+* update the gRPC client Program.cs file . Replace port with number specified in Properties/launchSettings.json
+```bash
+using Grpc.Net.Client;
+using GrpcGreeterClient;
+
+// The port number must match the port of the gRPC server.
+using var channel = GrpcChannel.ForAddress("https://localhost:7042");
+var client = new Greeter.GreeterClient(channel);
+var reply = await client.SayHelloAsync(
+    new HelloRequest { Name = "GreeterClient" });
+Console.WriteLine("Greeting: " + reply.Message);
+Console.WriteLine("Press any key to exit...");
+Console.ReadKey();
+```
+```bash
