@@ -1,12 +1,8 @@
 # Globe Visualization System
-
 This directory contains the globe visualization system components.
+- [GMAT](https://documentation.help/GMAT/documentation.pdf)
 
 ## Contents
-
-- `globe.html` - Main globe visualization interface
-- `globe.css` - Styling for the globe visualization
-- `globe.js` - Globe visualization logic and interactions
 - `Sat/` - Satellite-related components and data
   - Codec/
   - Data/
